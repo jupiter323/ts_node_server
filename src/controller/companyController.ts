@@ -107,5 +107,43 @@ class CompanyController {
       }
     );
   };
+
+  newTRMCron() {
+    var source = "USD";
+    var target = "UYU";
+    return new Promise((res, rej) => {
+      request.get(
+        "https://transferwise.com/gb/currency-converter/api/historic?source=" +
+        source +
+        "&target=" +
+        target +
+        "&period=30"
+        , async (error: any, response: any, body: any) => {
+          var data = JSON.parse(body)
+          if (error) {
+            return rej({ success: false, errors: [error.message] });
+          }
+          if (data.length > 0) {
+            for (var i = 0; i < data.length; i++) {
+              Company.create({ rate: data[i]['rate'], source: data[i]['source'], time: data[i]['time'], target: data[i]['target'] }, (err: any) => {
+                if (err) {
+                  return rej({ success: false, errors: [err.message] });
+                }
+              })
+            }
+            res({ success: true, message: "data inserted" });
+          } else {
+            rej({
+              message: "source and target not found"
+            });
+          }
+
+          // res.status(200).send({ success: true, message: "data inserted" });
+        }
+      );
+    })
+
+
+  }
 }
 module.exports = CompanyController

@@ -1,5 +1,5 @@
 var cron = require('node-cron');
-// var userControl = require('./../controller/userControl')
+var CompanyContoller = require('../controller/companyController')
 class CronJob {
 
     constructor() {
@@ -7,11 +7,13 @@ class CronJob {
     }
 
     cronJobs() {
-        cron.schedule('* * * * *', async () => {
+
+        cron.schedule('0 7 * * *', async () => {
+            var cc = new CompanyContoller();
             const refresh = await Promise.resolve(
-                // userControl.refreshCheckingToken()
+                cc.newTRMCron() 
             )
-            console.log('Token refresh every minute', refresh);
+            console.log('TRM refresh every day 7AM', refresh);
         }, {
                 scheduled: true,
                 timezone: "America/Sao_Paulo"
